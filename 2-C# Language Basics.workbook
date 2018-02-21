@@ -1,0 +1,185 @@
+---
+uti: com.xamarin.workbook
+id: 1a844bff-8fec-4ec2-8a4a-ab24b803e475
+title: 2-C# Language Basics
+platforms:
+- Console
+---
+
+# Capítulo 2 - C# Language Basics
+
+## Un programa en C#
+
+```csharp
+using System;
+class Test
+{
+    static void Main()
+    {
+        Console.WriteLine (FeetToInches (30)); // 360
+        Console.WriteLine (FeetToInches (100)); // 1200
+    }
+    static int FeetToInches (int feet)
+    {
+        int inches = feet * 12;
+        return inches;
+    }
+}
+```
+
+#### Compilación
+
+C# se compila con csc.exe. Puede ser llamado en la línea de comandos o por medio del IDE. El compilador de C# 7 está en VS2017.
+
+## Sintaxis
+
+Inspirada en C y C++.
+
+* Identificadores: nombres que toman clases, métodos, variables, etc. Por convención, **parámetros, variables locales y campos privados van en camelCase y el resto en PascalCase**.
+
+* Palabras clave: palabras reservadas por el compilador. No pueden ser usadas a no ser que se anteponga el prefijo @ (ej., @class). En algunos casos, si pueden ser usadas en diferentes contextos (ej., from).
+
+* Literales: piezas primitivas de datos, como 10 o “hola”. Puntuadores: {}; Operadores: (\*)=.
+
+* Comentarios: de una línea (//) y multi-líneas (/\*\*/).
+
+## Tipos básicos
+
+Todos los valores son instancias de un tipo.
+
+* **int:** literales numéricos de hasta 32 bits de memoria. **string:** cadenas. **bool:** true o false.
+
+Se pueden construir tipos nuevos, que usan primitivos para crear tipos más complejos. No tienen grandes diferencias con los tipos primitivos. Los tipos tienen **miembros de datos** y **miembros de función**. Los datos son creados instanciando un tipo a través de la creación con un constructor.
+
+*UnitConverter a = new UnitConverter(23);*
+
+Los miembros pueden ser de instancia o estáticos. Si son estáticos, no operan respecto a la instancia del tipo si no sobre el tipo en sí y deben ser declarados \*static. \*Por otro lado, la palabra *public expone* miembros a otras clases.
+
+**Conversiones:** entre instancias de distntos tipos. Pueden ser **implícitas** (sólo cuando no pueda haber pérdida de información y los tipos siempre puedan convertirse entre sí) y **explícitas:**
+
+```csharp
+int x = 12;
+short y = (short) x;
+```
+
+**Tipos de valor y tipos de referencia**
+
+Tipos de valor incluye la mayoría de los tipos predefinidos, los struct y los enum. Tipos de referencia incluye clases, arreglos y tipos de interface (además de *string*). La principal diferencia es **el manejo en memoria.**
+
+* Tipos de valor: es simplemente un valor. Si asignamos a otra variable una instancia de este tipo, se copia el valor de forma independiente. *int, long, decimal, float (y demás numéricos), bool y char.*
+
+* Tipos de referencia: tiene dos partes, el objeto y la referencia al objeto. Implica más espacio. Asignar copia la referencia, no duplica el objeto. *string y object.*
+
+* Null: tipos de referencia pueden apuntar a ningún objeto. Tipos de valor dan error de compilación.
+
+## Tipos numéricos
+
+Entre los integrales, *int* y \*long \*deben priorizarse ya que son favorecidos por el runtime y el lenguaje. Entre los reales, se prefieren \*float \*y *double*, además de *decimal* (aunque sólo para cálculos financieros de máxima precisión).
+
+\*\*Literales numéricos: \*\*
+
+* Los integrales pueden escribirse con notación hexadecimal con el prefijo **0x**.
+
+* Además, desde C# 7.0 se pueden insertar guiones dentro de los números para facilitar su lectura (por ejemplo, 1\_000\_000).
+
+* También se pueden escribir números en binario con el prefijo 0b.
+
+* Los reales pueden contener decimales (.) y exponenciales (ej., 1000000=1E06).
+
+**Inferencia de tipo:** el compilador infiere por defecto que es *double* si es real y que es el primero que cumpla con la capacidad de valor si es integral: *int, uint, long o* ulong.
+
+**Sufijos numéricos:** definen explícitamente el tipo: *D double, **F float, M decimal,** U uint, L long, UL ulong.*
+
+**Conversiones numéricas**
+
+* Entre integrales, implícitas si el tipo destino puede representar todos los valores del tipo origen. Si no, explícita.
+
+* Entre reales, *float* —> \*double \*es implícita, pero no al revés.
+
+* De integrales a reales, implícita. De reales a integrales, explícita. En ese caso, se trunca (no redondea).
+
+* Todas las conversiones de y hasta *decimal* deben ser explícitas, menos las integrales —> *decimal.*
+
+**Operadores aritméticos:** +, -, \*, / y %.
+
+\*\*Incrementadores y decrementadores: \*\*++ y —. Se puede hacer preceder y seguir a la variable (x++ y ++x).
+
+**Operaciones especiales en integrales:**
+
+* División: siempre trunca. Dividir por 0 lanza una excepción.
+
+* Desbordamiento: no lanza excepción, si no que “da la vuelta”. Si uno decrementa en uno el mínimo valor de int, obtiene el máximo valor de int.
+
+* *checked:* permite chequear que no se produzca un desbordamiento *silencioso* y que se lance una excepción. Se puede usar:
+
+```csharp
+int a = 1000000;
+int b = 1000000;
+int c = checked(a * b); // Opción 1
+checked // Opción 2
+{
+    c = a * b;
+}
+```
+
+**Operadores de bit:** ~, &, |, ^, \<\< y >>.
+
+\*\*Integrales de 8 y 16 bits: \*\*son \*byte, sbyte, short \*y *ushort.* No tienen operadores aritméticos, por lo que al sumarlos se castean implícitamente a int, lo que impide que puedan ser asignados al integral original. Para esos casos, hay que hacer una conversión explícita además de la operación aritmética.
+
+**Valores Float y Double especiales:** \*NaN (not a number), +inf, -inf \*y *-0.*
+
+* Los valores infinitos resultan de hacer divisiones por cero.
+
+* NaN no es igual a ningún número, tampoco a otro NaN (aunque si consultamos con equals sí)
+
+\*\*\*Double \***_vs. Decimal:_** double es preferible para computaciones científicas mientras que preferimos *decimal* para transacciones financieras (valores “humanos”, no medidos).
+
+Dado que *double* y *float* son base 2, no representan bien componentes fraccionarios. En cambio, *decimal* (de base 10) sí lo hace.
+
+## Tipo booleano y operadores
+
+Valor lógico de un bit. Como runtime no maneja eficientemente cantidades menores a 1 byte, usa uno. Para evitar perder memoria en realidad usa un array de *bool* que va administrando.
+
+* No existen conversiones desde/hacia *bool.*
+
+* Las igualdades  y comparaciones devuelven booleanos, pero se debe tener en cuenta que en tipos de valores comparan igualdad y en tipos de referencia, referencia.
+
+* Operadores condicionales son && y ||. \*\*Usan cortocircuitado. \*\*C# permite usar & y |, que no cortocircuitea.
+
+* **Operador ternario:** *a > b ? a : b;* (si a es más grande que b, a; si no, b).
+
+## Strings y caracteres
+
+Char representa un caracter Unicode en 2 bytes.
+
+**Secuencias de escape:** caracteres que no pueden ser expresados literalmente. Ejemplo, \\ con \\\\, o una línea nueva con \\n.
+
+**Conversiones: **implícita a numéricos que permitan un short.
+
+### Tipo String
+
+* Cadena inmutable de caracteres, escritos entre comillas dobles.
+
+* Se pueden usar las mismas secuencias de escape pero se agregan literales *verbatim* —> Si se agrega antes de las comillas un @, no se  permiten secuencias de escape porque esos literales serán entendidos por el lenguaje. También permite escribir literales con varias líneas (sin /n).
+
+* **Concatenación:** con +. Si uno de los operandos no es string, se llama a toString().
+
+* **Interpolación de string:** permite incluir expresiones entre llaves:
+
+```csharp
+int x = 4;
+Console.Write($"A square has {x} sides \n");
+Console.Write($"255 in hex is {byte.MaxValue:X2}")
+```
+
+## Arreglos
+
+Representa un número fijo de variables (o elementos) de un tipo particular. Se almacenan uno detrás de otro —> muy eficientes.
+
+* *char\[] vocales = new char\[5]; // Ejemplo*
+
+* Se pueden inicializar y declarar en un paso —> \*char\[] vocales = new char\[]{‘a’,’e’,’i’,’o’,’u’}; \*(o sin el new char\[]).
+
+* **Inicialización por defecto: **si el tipo es de valor, se inicializa el valor por defecto (ejemplo, int = 0). Si es de tipo, se crean mil referencias null, por lo que si son llamados dará error.
+
+### Arreglos multidimensionales

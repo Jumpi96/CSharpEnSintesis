@@ -1,0 +1,13 @@
+---
+uti: com.xamarin.workbook
+id: 26eee269-cf1d-4e96-bbb1-254cda179530
+title: Calendario
+platforms:
+- Console
+---
+
+# Calendario
+
+* C2: 12/02/18 - 25/02/18 —> En proceso
+
+* C3: 26/02/18 - 11/03/18
