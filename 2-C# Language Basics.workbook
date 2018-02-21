@@ -154,7 +154,7 @@ Char representa un caracter Unicode en 2 bytes.
 
 **Secuencias de escape:** caracteres que no pueden ser expresados literalmente. Ejemplo, \\ con \\\\, o una línea nueva con \\n.
 
-**Conversiones: **implícita a numéricos que permitan un short.
+\*\*Conversiones: \*\*implícita a numéricos que permitan un short.
 
 ### Tipo String
 
@@ -180,6 +180,109 @@ Representa un número fijo de variables (o elementos) de un tipo particular. Se 
 
 * Se pueden inicializar y declarar en un paso —> \*char\[] vocales = new char\[]{‘a’,’e’,’i’,’o’,’u’}; \*(o sin el new char\[]).
 
-* **Inicialización por defecto: **si el tipo es de valor, se inicializa el valor por defecto (ejemplo, int = 0). Si es de tipo, se crean mil referencias null, por lo que si son llamados dará error.
+* \*\*Inicialización por defecto:\*\* si el tipo es de valor, se inicializa el valor por defecto (ejemplo, int = 0). Si es de tipo, se crean mil referencias null, por lo que si son llamados dará error.
 
 ### Arreglos multidimensionales
+
+* **Rectangulares:** se usan comas para separar las dimensiones. *int\[,] matrix = new int\[3,3];*
+
+* **Jagged: **pueden no ser rectangulares (teniendo la dimensión interna sin una longitud fija). Se declaran *int\[]\[] matrix = new int\[3]\[];*
+
+Todos los accesos son chequeados en *runtime*, lanzando una excepción si es *out-of-bounds*.
+
+## Variables y parámetros
+
+Una variable es una ubicación de memoria con un valor modificable. Puede ser una variable local, parámetros (value, ref o out), un campo (de instancia o estático) o el elemento de un arreglo.
+
+### El *Stack* y el *Heap*
+
+Son los lugares donde se almacenan las variables y constantes.
+
+* Un **stack **es un bloque de memoria para almacenar variables locales y parámetros. Éste crece y decrece mientras se va ejecutando la función. En el caso de una función recursiva, esto significa que una variable se va creando cada vez que se llama la función recursiva.
+
+* Un **heap** es un bloque de memoria donde se almacenan objetos. Cuando se crea uno, se almacena y se retorna una referencia. El *garbage collector* va eliminando objetos desreferenciados. También almacena variables estáticas, que viven en el *heap* hasta finalizar la ejecución del programa.
+
+**Asignación definida: **esto significa que fuera de un contexto *unsafe*, es imposible acceder a memoria no inicializada.
+
+* Variables locales deben ser valuadas antes de ser leídas.
+
+* Argumentos de una función deben ser pasados al llamar la función.
+
+* El resto de los valores es inicializado por el runtime.
+
+**Valores por defecto:** antes nombrados, depende del tipo: para todos los tipos de referencia es *null*, para todos los numéricos y enum 0, para *bool* false y para char ‘\\0’.
+
+**Parámetros**: de un método. Se puede controlar cómo se hace esto:
+
+* **Sin modificador:** se pasan por valor, la variable se define definitivamente al entrar. Al ingresar, se realiza una copia en la memoria del valor del parámetro. Por lo tanto, si se cambia en la función, no se cambia fuera de ella.
+
+* **Modificador ref:** pasar por referencia. Al cambiar el valor del parámetro, se cambia su valor en la variable original. Se utiliza la palabra *ref* tanto en la declaración del método cómo en el llamado al mismo. Puede ser un tipo de valor o de referencia.
+
+* **Modificador out:** se pasa por referencia, pero puede no ser inicializada antes de llamar a la función y debe serlo antes de finalizar la función. Permite obtener varias salidas de un método. Desde C# 7.0, se puede declarar la variable en el llamado al método. Ejemplo, \*Split ("Stevie Ray Vaughan", **out string a, out string b**); \*Además, se puede descartar salidas que no nos interese, colocando \*out \_ \*en el llamado.
+
+* **Modificador params:** permite recibir una cantidad no definida de parámetros de un tipo. Se debe declarar como un arreglo.
+
+* **Modificador opcional: ** es opcional si mantiene un valor default definido *(int i = 2)* y no pueden ser *out* ni *ref.*
+
+* **Parámetros con nombre: ** en vez de pasar parámetros por posición, se puede hacer el paso por nombre. Ejemplo, \*Foo(i:2,f:1); \*Permite mezclar con parámetros posicionales en el llamado, pero siempre al final de los parámetros.
+
+* **Ref locales: (C# 7.0) **permite definir una variable local que referencia a un elemento de un array o a un elemento de un objeto.
+
+```csharp
+int[] numbers = { 0, 1, 2, 3, 4};
+ref int numRef = ref numbers[2];
+numRef *= 10;
+Console.WriteLine(numbers[2]); //20
+```
+
+* **Ref devoluciones: (C# 7.0) **permite devolver un ref local desde un método.
+
+* **Variables locales con tipado implícito:** usando **var**. El tipado ímplicito no deja de ser estático. Puede reducir la legibilidad del código.
+
+## Expresiones y operadores
+
+Una expresión denota un valor. Las más comunes son constantes y variables. Un operador toma uno o más entradas para generar una nuevo expresión, y pueden usar unarios, binarios y ternarios.
+
+* **Expresiones primarias: **son expresiones compuestas por operadores intrínsecos al lenguaje. Ejemplo, *Math.Log(1);*
+
+* **Expresiones void:** no representan un valor. Ejemplo, *Console.WriteLine(1).*
+
+* **Expresiones de asignación:** usa el operador = para asignar el resultado de una expresión a una variable. Devuelven el valor, por lo que pueden usarse también \*y = 5 \* (x = 2) \*y *a = b = c = d = 0.*
+
+* **Procedencia de operaciones y asociación: **_do some math._ Excepciones con operadores de asignación, lambda, entre otros, que son asociativos a la derecha.
+
+## Operadores null
+
+* **Unión nula (??):** Si el objeto no es nulo, devolverlo; si es, devolver un default. *b = a ?? “nothing”;*
+
+* **De condición nula (?.): **permite reemplazar el punto, permitiendo que si el objeto precedente es null, no se lance una excepción si no que la expresión devuelva null.
+
+## Declaraciones
+
+Un bloque de declaraciones es una serie de declaraciones que aparece entre llaves.
+
+* **Declaración:** declara una nueva variable. Termina con un semicolon, aunque declare más de una variable a la vez.
+
+* **Expresión:** expresiones que también son declaraciones. Pueden ser de asignación, llamadas a métodos e instanciación de objetos.
+
+* **De selección:** de selección (if, switch), el operador condicional (?:) y los ciclos (do...while, while, for y foreach).
+
+En C# 7.0 se agrega la posibilidad de hacer switch con distintos tipos.
+
+* **Saltos:** *break, goto, return, throw *y* continue.*
+
+* **Misceláneos:** entre ellas, *using* que permite importar paquetes.
+
+## Namespaces
+
+Es un dominio para nombres de tipos. Se organizan jerárquicamente para simplificar y evitar conflictos.
+
+* **Directiva *using*: **permite importar espacios de nombre. Desde 6.0, se puede importar no sólo un namespace si no un tipo específico con la directiva *using static.*
+
+* **Scope de nombres:** nombres declarados en namespaces externos pueden ser usados sin ningun prefijo. Si uno quiere llamar a un nombre parte del namespace exterior pero una “rama distinta” lo puede hacer usando el prefijo del namespace exterior.
+
+* **Ocultación de nombres:** ante un nombre interno y un externo, gana el interno.
+
+* **Namespaces repetidos:** se puede, siempre que los scope internos no se pisen. Se pueden hasta declarar en distintos archivos.
+
+* **Uso de *using* anidados:** declarar namespace dentro de otro namespace.
