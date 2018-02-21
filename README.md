@@ -6,5 +6,5 @@
 Cuadernos de estudio del libro publicado en 2017.
 
 - **Capítulo 1:** Introducing C# and the .NET Framework
-- **Capítulo 2:** C# Language Basics --> **En proceso**
+- **Capítulo 2:** C# Language Basics
 
